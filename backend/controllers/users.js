@@ -7,7 +7,6 @@ const {
   DEFAULT_ERROR_CODE,
   createNotFoundError,
 } = require('../constants/constants');
-require('dotenv').config();
 
 // Get full users list
 module.exports.getAllUsers = (req, res) => {
