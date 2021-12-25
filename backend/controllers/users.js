@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const {
   NOTFOUND_ERROR_CODE,
@@ -41,9 +42,10 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  User.create({
-    name, about, avatar, email, password,
-  })
+  bcrypt.hash(password, 12)
+    .then((hash) => User.create({
+      name, about, avatar, email, hash,
+    }))
     .then(() => {
       res.status(200).send({ message: 'user created successfully' });
     })
