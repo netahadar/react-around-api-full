@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   NOTFOUND_ERROR_CODE,
@@ -6,6 +7,7 @@ const {
   DEFAULT_ERROR_CODE,
   createNotFoundError,
 } = require('../constants/constants');
+require('dotenv').config();
 
 // Get full users list
 module.exports.getAllUsers = (req, res) => {
@@ -89,5 +91,25 @@ module.exports.updateAvatar = (req, res) => {
         return;
       }
       res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const { NODE_ENV, JWT_SECRET } = process.env;
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+      res.status(200).send(token);
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
