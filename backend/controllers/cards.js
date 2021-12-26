@@ -11,7 +11,7 @@ module.exports.getAllCards = (req, res) => {
   Card.find({})
     .orFail(createNotFoundError)
     .then((cardsData) => {
-      res.status(200).send(JSON.parse(cardsData));
+      res.status(200).send(cardsData);
     })
     .catch((err) => {
       if (err.name === 'Not Found') {
@@ -41,16 +41,19 @@ module.exports.createCard = (req, res) => {
 // Delete card
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  if (req.owner._id !== req.user._id) {
-    throw new Error('Access to the requested resource is forbidden');
-  }
-  Card.deleteOne(cardId)
+  Card.findById(cardId)
     .orFail(createNotFoundError)
-    .then(() => {
-      res.status(200).send('card has been deleted successfully');
+    .then((card) => {
+      if (!card.owner._id.equals(req.user._id)) {
+        throw new Error('Access to the requested resource is forbidden');
+      }
+      Card.deleteOne({ card })
+        .then(() => {
+          res.status(200).send('card has been deleted successfully');
+        });
     })
     .catch((err) => {
-      if (err.name === 'Unauthorized') {
+      if (err.name === 'Error') {
         res.status(403).send({ message: `${err.message}` });
       }
       if (err.name === 'CastError') {
@@ -58,7 +61,6 @@ module.exports.deleteCard = (req, res) => {
       }
       if (err.name === 'Not Found') {
         res.status(NOTFOUND_ERROR_CODE).send({ message: `${err.message}` });
-        return;
       }
       res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
     });
