@@ -6,6 +6,7 @@ const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middleware/auth');
+const { errorHandler } = require('./middleware/errorHandler');
 require('dotenv').config();
 
 const app = express();
@@ -26,6 +27,8 @@ app.use('/', auth, cards);
 app.get('*', (req, res) => {
   res.status(404).send({ message: 'Page Not Found' });
 });
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

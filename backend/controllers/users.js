@@ -1,45 +1,41 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  NOTFOUND_ERROR_CODE,
-  INVALIDDATA_ERROR_CODE,
-  DEFAULT_ERROR_CODE,
-  createNotFoundError,
-} = require('../constants/constants');
+const BadRequestError = require('../errors/badRequestError');
+const NotFoundError = require('../errors/notFoundError');
 
 // Get full users list
-module.exports.getAllUsers = (req, res) => {
+module.exports.getAllUsers = (req, res, next) => {
   User.find({})
-    .orFail(createNotFoundError)
-    .then((usersData) => res.status(200).send(usersData))
-    .catch((err) => {
-      if (err.name === 'Not Found') {
-        res.status(NOTFOUND_ERROR_CODE).send({ message: `${err.message}` });
-        return;
+    .then((usersData) => {
+      if (!usersData) {
+        throw new NotFoundError('No users to display');
       }
-      res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
-    });
+      return res.status(200).send(usersData);
+    })
+    .catch(next);
 };
 
 // Get user by Id
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(createNotFoundError)
-    .then((chosenUser) => res.status(200).send(chosenUser))
+    .then((chosenUser) => {
+      if (!chosenUser) {
+        throw new NotFoundError('No user with matching id found');
+      }
+      return res.status(200).send(chosenUser);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(INVALIDDATA_ERROR_CODE).send({ message: `${err.message}` });
-        return;
-      } if (err.name === 'Not Found') {
-        res.status(NOTFOUND_ERROR_CODE).send({ message: `${err.message}` });
+        throw new BadRequestError('Bad request');
       }
-      res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
-    });
+      next(err);
+    })
+    .catch(next);
 };
 
 // Create a new user
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { email, password } = req.body;
   bcrypt
     .hash(password, 12)
@@ -48,19 +44,16 @@ module.exports.createUser = (req, res) => {
       email,
       password,
     }))
-    .then(() => {
+    .then((user) => {
+      if (!user) {
+        throw new BadRequestError('Bad request');
+      }
       res.status(200).send({ message: 'user created successfully' });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(INVALIDDATA_ERROR_CODE).send({ messege: `${err.message}` });
-        return;
-      }
-      res.status(DEFAULT_ERROR_CODE).send({ messege: `${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -68,40 +61,31 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(createNotFoundError)
     .then((updatedUser) => {
+      if (!updatedUser) {
+        throw new NotFoundError('No user with matching id found');
+      }
       res
         .status(200)
         .send({ message: `User ${updatedUser} updated successfuly` });
     })
-    .catch((err) => {
-      if (err.name === 'Not Found') {
-        res.status(NOTFOUND_ERROR_CODE).send({ message: `${err.message}` });
-        return;
-      }
-      res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const id = req.user._id;
-  console.log(id);
   const { avatar } = req.body;
   User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
-    .orFail(createNotFoundError)
-    .then(() => {
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
       res.status(200).send({ message: 'Avatar updated successfuly' });
     })
-    .catch((err) => {
-      if (err.name === 'Not Found') {
-        res.status(NOTFOUND_ERROR_CODE).send({ message: `${err.message}` });
-        return;
-      }
-      res.status(DEFAULT_ERROR_CODE).send({ message: `${err.message}` });
-    });
+    .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password, {
@@ -109,6 +93,9 @@ module.exports.login = (req, res) => {
     runValidators: true,
   })
     .then((user) => {
+      if (!user) {
+        throw new BadRequestError('Bad request');
+      }
       const { NODE_ENV, JWT_SECRET } = process.env;
       const token = jwt.sign(
         { _id: user._id },
@@ -117,7 +104,5 @@ module.exports.login = (req, res) => {
       );
       res.status(200).send(token);
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };
