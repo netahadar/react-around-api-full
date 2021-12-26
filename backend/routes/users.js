@@ -11,7 +11,10 @@ const jsonParser = bodyParser.json();
 users.get('/users', getAllUsers);
 
 // Get user by id
-users.get('/users/:id', getUserById);
+// users.get('/users/:id', getUserById);
+
+// Get user's data
+users.get('users/me', getUserById);
 
 // Update users
 users.patch('/users/me', jsonParser, updateUser);

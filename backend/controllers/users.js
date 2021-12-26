@@ -24,7 +24,7 @@ module.exports.getAllUsers = (req, res) => {
 
 // Get user by Id
 module.exports.getUserById = (req, res) => {
-  User.findById(req.params.id)
+  User.findById(req.user._id)
     .orFail(createNotFoundError)
     .then((chosenUser) => res.status(200).send(chosenUser))
     .catch((err) => {
@@ -41,11 +41,12 @@ module.exports.getUserById = (req, res) => {
 // Create a new user
 module.exports.createUser = (req, res) => {
   const {
-    name, about, avatar, email, password,
+    email, password,
   } = req.body;
   bcrypt.hash(password, 12)
-    .then((hash) => User.create({
-      name, about, avatar, email, hash,
+    // eslint-disable-next-line no-shadow
+    .then((password) => User.create({
+      email, password,
     }))
     .then(() => {
       res.status(200).send({ message: 'user created successfully' });

@@ -40,13 +40,19 @@ module.exports.createCard = (req, res) => {
 
 // Delete card
 module.exports.deleteCard = (req, res) => {
-  const { cardId } = req.user._id;
+  const { cardId } = req.params;
+  if (req.owner._id !== req.user._id) {
+    throw new Error('Access to the requested resource is forbidden');
+  }
   Card.deleteOne(cardId)
     .orFail(createNotFoundError)
     .then(() => {
       res.status(200).send('card has been deleted successfully');
     })
     .catch((err) => {
+      if (err.name === 'Unauthorized') {
+        res.status(403).send({ message: `${err.message}` });
+      }
       if (err.name === 'CastError') {
         res.status(INVALIDDATA_ERROR_CODE).send({ message: `${err.message}` });
       }

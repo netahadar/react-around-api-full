@@ -1,6 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
@@ -14,14 +15,16 @@ const { PORT = 3000 } = process.env;
 mongoose.connect('mongodb://localhost:27017/aroundb');
 
 app.use(helmet());
-app.use('/', auth, users);
-app.use('/', auth, cards);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('*', (req, res) => {
   res.send(404, { message: 'Page Not Found' });
 });
 app.post('/signin', login);
 app.post('/signup', createUser);
+app.use('/', auth, users);
+app.use('/', auth, cards);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

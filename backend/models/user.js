@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        return /(http:\/\/|https:\/\/)[www\.]?[a-zA-z0-9.]+\/?#?/i.test(v);
+        validator.isURL(v);
       },
       message: (props) => `${props.value} is not a valid link!`,
     },
@@ -27,34 +28,32 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
     validate: {
       validator(v) {
-        return /[a-z0-9\.]+@[a-z]+\.[a-z]{2,3}[\.a-z]*/i.test(v);
+        validator.isEmail(v);
       },
-      message: (props) => `${props.value} is not a valid email adress!`,
+      message: (props) => `${props.value} is not a valid email!`,
     },
   },
   password: {
     type: String,
-    required: true,
     validate: {
       validator(v) {
-        return /[a-z0-9!@#$%,&\^\*\(\)\.\+\\\{\}\-]+/i.test(v);
+        validator.isStrongPassword(v);
       },
       message: (props) => `${props.value} is not a valid password!`,
     },
+    select: false,
   },
 });
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Incorrect email or password'));
       }
-
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
