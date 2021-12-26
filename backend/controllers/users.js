@@ -40,13 +40,13 @@ module.exports.getUserById = (req, res) => {
 
 // Create a new user
 module.exports.createUser = (req, res) => {
-  const {
-    email, password,
-  } = req.body;
-  bcrypt.hash(password, 12)
+  const { email, password } = req.body;
+  bcrypt
+    .hash(password, 12)
     // eslint-disable-next-line no-shadow
     .then((password) => User.create({
-      email, password,
+      email,
+      password,
     }))
     .then(() => {
       res.status(200).send({ message: 'user created successfully' });
@@ -63,10 +63,16 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const id = req.user._id;
   const { name, about } = req.body;
-  User.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
     .orFail(createNotFoundError)
     .then((updatedUser) => {
-      res.status(200).send({ message: `User ${updatedUser} updated successfuly` });
+      res
+        .status(200)
+        .send({ message: `User ${updatedUser} updated successfuly` });
     })
     .catch((err) => {
       if (err.name === 'Not Found') {
@@ -79,8 +85,9 @@ module.exports.updateUser = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const id = req.user._id;
+  console.log(id);
   const { avatar } = req.body;
-  User.findByIdAndUpdate(id, avatar, { new: true, runValidators: true })
+  User.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .orFail(createNotFoundError)
     .then(() => {
       res.status(200).send({ message: 'Avatar updated successfuly' });
@@ -97,7 +104,10 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password, { new: true, runValidators: true })
+  return User.findUserByCredentials(email, password, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       const { NODE_ENV, JWT_SECRET } = process.env;
       const token = jwt.sign(
@@ -108,8 +118,6 @@ module.exports.login = (req, res) => {
       res.status(200).send(token);
     })
     .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
+      res.status(401).send({ message: err.message });
     });
 };

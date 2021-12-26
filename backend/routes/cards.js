@@ -1,16 +1,13 @@
 const cards = require('express').Router();
-const bodyParser = require('body-parser');
 const {
   getAllCards, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
-
-const jsonParser = bodyParser.json();
 
 // Get full cards list
 cards.get('/cards', getAllCards);
 
 // Create a new card
-cards.post('/cards', jsonParser, createCard);
+cards.post('/cards', createCard);
 
 // Delete a card
 cards.delete('/cards/:cardId', deleteCard);

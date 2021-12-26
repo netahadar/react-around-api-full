@@ -1,11 +1,11 @@
 const users = require('express').Router();
 
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const {
   getAllUsers, getUserById, updateUser, updateAvatar,
 } = require('../controllers/users');
 
-const jsonParser = bodyParser.json();
+// const jsonParser = bodyParser.json();
 
 // Get full users list
 users.get('/users', getAllUsers);
@@ -14,12 +14,12 @@ users.get('/users', getAllUsers);
 // users.get('/users/:id', getUserById);
 
 // Get user's data
-users.get('users/me', getUserById);
+users.get('/users/me', getUserById);
 
 // Update users
-users.patch('/users/me', jsonParser, updateUser);
+users.patch('/users/me', updateUser);
 
 // Update avatar
-users.patch('/users/me/avatar', jsonParser, updateAvatar);
+users.patch('/users/me/avatar', updateAvatar);
 
 module.exports = users;

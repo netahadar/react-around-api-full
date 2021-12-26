@@ -18,13 +18,14 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('*', (req, res) => {
-  res.send(404, { message: 'Page Not Found' });
-});
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use('/', auth, users);
 app.use('/', auth, cards);
+
+app.get('*', (req, res) => {
+  res.status(404).send({ message: 'Page Not Found' });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

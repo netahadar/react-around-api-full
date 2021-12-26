@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-escape */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
@@ -20,7 +19,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        validator.isURL(v);
+        return validator.isURL(v);
       },
       message: (props) => `${props.value} is not a valid link!`,
     },
@@ -31,7 +30,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator(v) {
-        validator.isEmail(v);
+        return validator.isEmail(v);
       },
       message: (props) => `${props.value} is not a valid email!`,
     },
@@ -40,7 +39,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(v) {
-        validator.isStrongPassword(v);
+        return validator.isStrongPassword(v);
       },
       message: (props) => `${props.value} is not a valid password!`,
     },
