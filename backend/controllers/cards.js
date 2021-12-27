@@ -38,7 +38,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card.owner._id.equals(req.user._id)) {
         throw new Error('Access to the requested resource is forbidden');
       }
-      Card.deleteOne({ card })
+      Card.deleteOne({ _id: cardId })
         .then(() => {
           res.status(200).send('card has been deleted successfully');
         });

@@ -1,21 +1,85 @@
 const cards = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
-  getAllCards, createCard, deleteCard, likeCard, dislikeCard,
+  getAllCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 } = require('../controllers/cards');
 
 // Get full cards list
 cards.get('/cards', getAllCards);
 
 // Create a new card
-cards.post('/cards', createCard);
+cards.post(
+  '/cards',
+  celebrate({
+    body: Joi.object()
+      .keys({
+        name: Joi.string().required().min(1).max(30),
+        link: Joi.string().uri().required(),
+        user: Joi.object().keys({
+          _id: Joi.string().alphanum().required(),
+        }).unknown(true),
+      })
+      .unknown(true),
+  }),
+  createCard,
+);
 
 // Delete a card
-cards.delete('/cards/:cardId', deleteCard);
+cards.delete(
+  '/cards/:cardId',
+  celebrate({
+    body: Joi.object().keys({
+      user: Joi.object().keys({
+        _id: Joi.string().alphanum().required(),
+      }).unknown(true),
+    }).unknown(true),
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string().alphanum().required(),
+      })
+      .unknown(true),
+  }),
+  deleteCard,
+);
 
 // Add like to card
-cards.put('/cards/:cardId/likes', likeCard);
+cards.put(
+  '/cards/:cardId/likes',
+  celebrate({
+    body: Joi.object().keys({
+      user: Joi.object().keys({
+        _id: Joi.string().alphanum().required(),
+      }).unknown(true),
+    }).unknown(true),
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string().alphanum().required(),
+      })
+      .unknown(true),
+  }),
+  likeCard,
+);
 
 // Dislike card
-cards.delete('/cards/:cardId/likes', dislikeCard);
+cards.delete(
+  '/cards/:cardId/likes',
+  celebrate({
+    body: Joi.object().keys({
+      user: Joi.object().keys({
+        _id: Joi.string().alphanum().required(),
+      }).unknown(true),
+    }).unknown(true),
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string().alphanum().required(),
+      })
+      .unknown(true),
+  }),
+  dislikeCard,
+);
 
 module.exports = cards;
