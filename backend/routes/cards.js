@@ -7,6 +7,7 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
+const { validateUrl } = require('../middleware/linkValidation');
 
 // Get full cards list
 cards.get('/cards', getAllCards);
@@ -18,7 +19,7 @@ cards.post(
     body: Joi.object()
       .keys({
         name: Joi.string().required().min(1).max(30),
-        link: Joi.string().uri().required(),
+        link: Joi.string().required().custom(validateUrl),
         user: Joi.object().keys({
           _id: Joi.string().alphanum().required(),
         }).unknown(true),

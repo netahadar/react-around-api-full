@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { errors } = require('celebrate');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
@@ -31,6 +32,10 @@ app.get('*', (req, res) => {
   res.status(404).send({ message: 'Page Not Found' });
 });
 
+// Celebrate error handler
+app.use(errors());
+
+// Centralized error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
