@@ -67,7 +67,7 @@ module.exports.updateUser = (req, res, next) => {
       }
       res
         .status(200)
-        .send({ message: `User ${updatedUser} updated successfuly` });
+        .send(updatedUser);
     })
     .catch(next);
 };
@@ -80,7 +80,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('User not found');
       }
-      res.status(200).send({ message: 'Avatar updated successfuly' });
+      res.status(200).send(user);
     })
     .catch(next);
 };
@@ -102,7 +102,9 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res.status(200).send(token);
+      res.status(200);
+      // eslint-disable-next-line quote-props
+      res.json({ token });
     })
     .catch(next);
 };

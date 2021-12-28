@@ -22,7 +22,7 @@ module.exports.createCard = (req, res, next) => {
       if (!card) {
         throw new BadRequestError('Bad request');
       }
-      res.status(200).send({ message: 'card created successfully' });
+      res.status(200).send(card);
     })
     .catch(next);
 };
@@ -40,7 +40,8 @@ module.exports.deleteCard = (req, res, next) => {
       }
       Card.deleteOne({ _id: cardId })
         .then(() => {
-          res.status(200).send('card has been deleted successfully');
+          res.status(200);
+          res.json({ message: 'card has been deleted successfully' });
         });
     })
     .catch((err) => {
@@ -66,7 +67,7 @@ module.exports.likeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('No card with matching id found');
       }
-      res.status(200).send(card.likes);
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -88,7 +89,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('No card with matching id found');
       }
-      res.status(200).send(card.likes);
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

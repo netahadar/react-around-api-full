@@ -64,7 +64,10 @@ function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
 
   //State for user email
-  const [email, setEmail] = React.useState("");
+  const [email, setEmail] = React.useState('');
+
+  //State for token
+  const [token, setToken] = React.useState('');
 
   //API request for getting initial cards data:
   React.useEffect(() => {
@@ -72,21 +75,6 @@ function App() {
       .getInitialCards()
       .then((res) => {
         setCards(res);
-      })
-      .catch(console.log);
-  }, []);
-
-  //API request for getting user data:
-  React.useEffect(() => {
-    api
-      .getUserInfo()
-      .then((res) => {
-        setCurrentUser({
-          name: res.name,
-          about: res.about,
-          avatar: res.avatar,
-          _id: res._id,
-        });
       })
       .catch(console.log);
   }, []);
@@ -100,7 +88,13 @@ function App() {
         .then((res) => {
           if (res) {
             setLoggedIn(true);
-            setEmail(res.data.email);
+            setEmail(res.email);
+            setCurrentUser({
+              name: res.name,
+              about: res.about,
+              avatar: res.avatar,
+              _id: res._id,
+            })
             history.push("/");
           }
         })
@@ -187,7 +181,7 @@ function App() {
 
   function handleCardLike(card) {
     // Check if card was already liked:
-    const isLiked = card.likes.some((user) => user._id === currentUser._id);
+    const isLiked = card.likes.some((id) => id === currentUser._id);
     // Send a request to the API and getting the updated card data
     api
       .changeLikeCardStatus(card._id, isLiked)

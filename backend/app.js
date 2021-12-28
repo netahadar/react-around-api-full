@@ -7,8 +7,9 @@ const { errors } = require('celebrate');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middleware/auth');
-const { errorHandler } = require('./middleware/errorHandler');
+const auth = require('./middlewares/auth');
+const { errorHandler } = require('./middlewares/errorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 
 const app = express();
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.options('*', cors());
 
+app.use(requestLogger);
+
 app.post('/signin', login);
 app.post('/signup', createUser);
 app.use('/', auth, users);
@@ -31,6 +34,8 @@ app.use('/', auth, cards);
 app.get('*', (req, res) => {
   res.status(404).send({ message: 'Page Not Found' });
 });
+
+app.use(errorLogger);
 
 // Celebrate error handler
 app.use(errors());

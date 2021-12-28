@@ -23,7 +23,7 @@ export default function Card({
   }
 
   // Checking if the current user is the owner of the current card:
-  const isOwn = card.owner._id === currentUser._id;
+  const isOwn = card.owner === currentUser._id;
 
   // Creating a variable to set in `className` for the delete button:
   const galleryTrashButtonClassName = `gallery__trash-button ${

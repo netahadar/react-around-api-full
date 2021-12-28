@@ -7,7 +7,7 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
-const { validateUrl } = require('../middleware/linkValidation');
+const { validateUrl } = require('../middlewares/linkValidation');
 
 // Get full cards list
 cards.get('/cards', getAllCards);

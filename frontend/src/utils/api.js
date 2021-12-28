@@ -40,6 +40,7 @@
     //Get initial cards from server:
     getInitialCards() {
       return this.fetchCall(`${this._baseUrl}/cards`, {
+        method:"GET",
         headers: this._headers,
       });
     }
@@ -80,15 +81,15 @@
   
     //Add like to card:
     _addLike(cardId) {
-      return this.fetchCall(`${this._baseUrl}/cards/likes/${cardId}`, {
+      return this.fetchCall(`${this._baseUrl}/cards/${cardId}/likes`, {
         method: "PUT",
         headers: this._headers,
       });
     }
   
-    //Remove like from catd:
+    //Remove like from card:
     _dislike(cardId) {
-      return this.fetchCall(`${this._baseUrl}/cards/likes/${cardId}`, {
+      return this.fetchCall(`${this._baseUrl}/cards/${cardId}/likes`, {
         method: "DELETE",
         headers: this._headers,
       });
@@ -104,8 +105,8 @@
     }
   }
   
-  const api = new Api("https://around.nomoreparties.co/v1/group-12", {
-    authorization: "12be1991-4f28-449f-a9a9-71d4704b25a2",
+  const api = new Api("http://localhost:3000", {
+    authorization: `Bearer ${localStorage.jwt}`,
     "Content-Type": "application/json",
   });
   

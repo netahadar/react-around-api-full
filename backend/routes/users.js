@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getAllUsers, getUserById, updateUser, updateAvatar,
 } = require('../controllers/users');
-const { validateUrl } = require('../middleware/linkValidation');
+const { validateUrl } = require('../middlewares/linkValidation');
 
 // Get full users list
 users.get('/users', getAllUsers);
@@ -44,7 +44,7 @@ users.patch(
       user: Joi.object().keys({
         _id: Joi.string().alphanum().required(),
       }).unknown(true),
-      link: Joi.string().required().custom(validateUrl),
+      avatar: Joi.string().required().custom(validateUrl),
     }).unknown(true),
   }),
   updateAvatar,

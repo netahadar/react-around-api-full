@@ -1,6 +1,5 @@
-import api
- from "./api";
-export const BASE_URL = "https://register.nomoreparties.co";
+import api from "./api";
+export const BASE_URL = "http://localhost:3000";
 
 export function register({ email, password }) {
   return api.fetchCall(`${BASE_URL}/signup`, {
@@ -34,7 +33,7 @@ export function authorize({ email, password }) {
       } else {
         throw new Error("the user with the specified email not found");
       }
-    });
+    })
 }
 
 export function getContent(token) {
