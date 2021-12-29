@@ -25,6 +25,8 @@ app.use(cors());
 app.options('*', cors());
 
 app.use(requestLogger);
+// Celebrate error handler
+app.use(errors());
 
 app.post('/signin', login);
 app.post('/signup', createUser);
@@ -36,9 +38,6 @@ app.get('*', (req, res) => {
 });
 
 app.use(errorLogger);
-
-// Celebrate error handler
-app.use(errors());
 
 // Centralized error handler
 app.use(errorHandler);

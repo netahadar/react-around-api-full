@@ -79,6 +79,13 @@ function App() {
       .catch(console.log);
   }, []);
 
+  React.useEffect(() => {
+    api._headers = {
+      authorization: `Bearer ${localStorage.jwt}`,
+      "Content-Type": "application/json",
+    }
+  }, [Main])
+
   // Validate token
   function checkToken() {
     if (localStorage.getItem("jwt")) {
@@ -168,12 +175,15 @@ function App() {
     api
       .setUserAvatar(newData)
       .then((res) => {
+        if (res) {
         setCurrentUser({
           name: res.name,
           about: res.about,
           avatar: res.avatar,
           _id: res._id,
-        });
+        });} else {
+          console.log("invalid avatar link")
+        }
         closeAllPopups();
       })
       .catch(console.log);
@@ -208,7 +218,12 @@ function App() {
     api
       .createNewCard(newData)
       .then((newCard) => {
+        if(Array.isArray(newCard)) {
         setCards([newCard, ...cards]);
+        }
+        else {
+          console.log('invalid card link')
+        }
         closeAllPopups();
       })
       .catch(console.log);
