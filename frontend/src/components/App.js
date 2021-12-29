@@ -79,13 +79,6 @@ function App() {
       .catch(console.log);
   }, []);
 
-  React.useEffect(() => {
-    api._headers = {
-      authorization: `Bearer ${localStorage.jwt}`,
-      "Content-Type": "application/json",
-    }
-  }, [Main])
-
   // Validate token
   function checkToken() {
     if (localStorage.getItem("jwt")) {
@@ -102,6 +95,10 @@ function App() {
               avatar: res.avatar,
               _id: res._id,
             })
+            api._headers = {
+              authorization: `Bearer ${localStorage.jwt}`,
+              "Content-Type": "application/json",
+            }
             history.push("/");
           }
         })
