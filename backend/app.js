@@ -16,7 +16,7 @@ const app = express();
 
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/aroundb');
+mongoose.connect('mongodb://netahadar.students.nomoreparties.sbs:27017/aroundb');
 
 app.use(helmet());
 app.use(bodyParser.json());
