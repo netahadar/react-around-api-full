@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
+const UserExistsError = require('../errors/userExistsError');
 
 // Get full users list
 module.exports.getAllUsers = (req, res, next) => {
@@ -49,6 +50,12 @@ module.exports.createUser = (req, res, next) => {
         throw new BadRequestError('Bad request');
       }
       res.status(200).send({ message: 'user created successfully' });
+    })
+    .catch((err) => {
+      if (err.code === 11000) {
+        throw new UserExistsError('User is already exists');
+      }
+      next(err);
     })
     .catch(next);
 };
