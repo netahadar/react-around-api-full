@@ -21,7 +21,7 @@ cards.post(
         name: Joi.string().required().min(1).max(30),
         link: Joi.string().required().custom(validateUrl),
         user: Joi.object().keys({
-          _id: Joi.string().alphanum().required(),
+          _id: Joi.string().hex().required(),
         }).unknown(true),
       })
       .unknown(true),
@@ -35,12 +35,12 @@ cards.delete(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
     }).unknown(true),
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().required(),
+        cardId: Joi.string().hex().required(),
       })
       .unknown(true),
   }),
@@ -53,12 +53,12 @@ cards.put(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
     }).unknown(true),
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().required(),
+        cardId: Joi.string().hex().required(),
       })
       .unknown(true),
   }),
@@ -71,12 +71,12 @@ cards.delete(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
     }).unknown(true),
     params: Joi.object()
       .keys({
-        cardId: Joi.string().alphanum().required(),
+        cardId: Joi.string().hex().required(),
       })
       .unknown(true),
   }),

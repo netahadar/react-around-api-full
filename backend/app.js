@@ -10,6 +10,7 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./errors/notFoundError');
 require('dotenv').config();
 
 const app = express();
@@ -39,8 +40,8 @@ app.post(
   '/signin',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required(),
-      password: Joi.string().required().min(3).max(12),
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
     }),
   }),
   login,
@@ -49,8 +50,8 @@ app.post(
   '/signup',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required(),
-      password: Joi.string().required().min(3).max(12),
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
     }),
   }),
   createUser,
@@ -58,8 +59,8 @@ app.post(
 app.use('/', auth, users);
 app.use('/', auth, cards);
 
-app.get('*', (req, res) => {
-  res.status(404).send({ message: 'Page Not Found' });
+app.get('*', () => {
+  throw new NotFoundError('OOPS! page not found');
 });
 
 app.use(errorLogger);

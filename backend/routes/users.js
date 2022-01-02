@@ -14,7 +14,7 @@ users.get(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
     }).unknown(true),
   }),
@@ -27,7 +27,7 @@ users.patch(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
       name: Joi.string().min(2).max(40),
       about: Joi.string().min(2).max(200),
@@ -42,7 +42,7 @@ users.patch(
   celebrate({
     body: Joi.object().keys({
       user: Joi.object().keys({
-        _id: Joi.string().alphanum().required(),
+        _id: Joi.string().hex().required(),
       }).unknown(true),
       avatar: Joi.string().required().custom(validateUrl),
     }).unknown(true),
