@@ -11,7 +11,6 @@ const auth = require('./middlewares/auth');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/notFoundError');
-const limiter = require('./middlewares/rateLimiter');
 require('dotenv').config();
 
 const app = express();
@@ -19,9 +18,6 @@ const app = express();
 const { PORT = 3000 } = process.env;
 
 mongoose.connect('mongodb://localhost:27017/aroundDb');
-
-// Apply the rate limiting middleware to all requests
-app.use(limiter);
 
 app.use(helmet());
 app.use(bodyParser.json());
