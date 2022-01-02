@@ -4,6 +4,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/badRequestError');
 const NotFoundError = require('../errors/notFoundError');
 const UserExistsError = require('../errors/userExistsError');
+const UnauthorizedError = require('../errors/unauthorizedError');
 
 // Get full users list
 module.exports.getAllUsers = (req, res, next) => {
@@ -112,6 +113,12 @@ module.exports.login = (req, res, next) => {
       res.status(200);
       // eslint-disable-next-line quote-props
       res.json({ token });
+    })
+    .catch((err) => {
+      if (err.name === 'Error') {
+        throw new UnauthorizedError('Incorrect email or password');
+      }
+      next(err);
     })
     .catch(next);
 };
